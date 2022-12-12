@@ -42,9 +42,11 @@ $routes->resource('/admin/products', ['websafe' => 1, 'controller' => 'Admin\Pro
 $routes->resource('/admin/categories', ['websafe' => 1, 'controller' => 'Admin\CategoryController', 'placeholder' => '(:num)', 'excepts' => ['new, edit']]);
 $routes->resource('/admin/brands', ['websafe' => 1, 'controller' => 'Admin\BrandController', 'placeholder' => '(:num)', 'excepts' => ['new, edit']]);
 $routes->resource('/admin/users', ['websafe' => 1, 'controller' => 'Admin\UserController', 'placeholder' => '(:num)', 'excepts' => ['new, edit']]);
+$routes->get('/admin/logout', 'Admin\HomeController::logout');
+$routes->post('/admin/login', 'Admin\HomeController::auth');
+$routes->get('/admin/login', 'Admin\HomeController::login');
+$routes->get('/admin', 'Admin\HomeController::index');
 
-$routes->get('/admin/login', 'Admin\HomeController::login', ['as' => 'admin_login']);
-$routes->get('/admin', 'Admin\HomeController::index', ['as' => 'admin_home']);
 $routes->get('/contact', 'ClientController::contact');
 $routes->get('/about', 'ClientController::about');
 $routes->get('/blog', 'ClientController::blog');

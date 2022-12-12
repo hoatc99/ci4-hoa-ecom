@@ -190,7 +190,15 @@
     });
 
 
+    /*==================================================================
+    [ Wishlist ]*/
+    $('.js-show-wishlist').on('click',function(){
+        $('.js-panel-wishlist').addClass('show-header-wishlist');
+    });
 
+    $('.js-hide-wishlist').on('click',function(){
+        $('.js-panel-wishlist').removeClass('show-header-wishlist');
+    });
 
     /*==================================================================
     [ Cart ]*/

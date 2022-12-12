@@ -15,6 +15,8 @@
 
     <?= $this->include('clients\components\cart') ?>
 
+    <?= $this->include('clients\components\wishlist') ?>
+
     <?= $this->renderSection('content') ?>
 
     <?= $this->include('clients\partials\footer') ?>

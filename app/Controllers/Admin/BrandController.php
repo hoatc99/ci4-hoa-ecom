@@ -28,10 +28,17 @@ class BrandController extends BaseController
 
     public function create()
     {
-        $this->brandModel->save([
-            'name' => $this->request->getPost('ten_thuong_hieu'),
-        ]);
-        return redirect('Admin\BrandController::index');
+        $rules = [
+            'ten_thuong_hieu' => 'required|min_length[1]|max_length[50]|is_unique[brands.name]',
+        ];
+        if ($this->validate($rules)) {
+            $this->brandModel->save([
+                'name' => $this->request->getPost('ten_thuong_hieu'),
+            ]);
+            return redirect('Admin\BrandController::index');
+        } else {
+            return redirect()->back()->with('validation', $this->validator);
+        }
     }
 
     public function update($id)

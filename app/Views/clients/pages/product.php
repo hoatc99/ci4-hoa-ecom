@@ -11,7 +11,9 @@
                     Tất cả sản phẩm
                 </button>
                 <?php foreach ($categories as $category) : ?>
-                    <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".<?= esc($category->slug) ?>"><?= esc($category->name) ?></button>
+                    <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".<?= esc($category->slug) ?>">
+                        <?= esc($category->name) ?> (<?= esc($category->count) ?>)
+                    </button>
                 <?php endforeach; ?>
             </div>
 
@@ -241,6 +243,13 @@
                             <a href="#" onclick="event.preventDefault(); document.querySelector('.js-modal<?= esc($product->id) ?>').classList.add('show-modal1')" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
                                 Xem nhanh
                             </a>
+
+                            <form action="<?= url_to('ClientController::add_to_cart', $product->id) ?>" method="post">
+                                <?= csrf_field() ?>
+                                <button type="submit" class="block2-btn-2 flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-addcart-detail-2">
+                                    Thêm vào giỏ
+                                </button>
+                            </form>
                         </div>
 
                         <div class="block2-txt flex-w flex-t p-t-14">

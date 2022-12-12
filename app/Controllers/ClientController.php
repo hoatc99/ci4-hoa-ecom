@@ -27,15 +27,30 @@ class ClientController extends BaseController
             array_push($tmp_cart, $product);
         }
         session()->set('tmp_cart', $tmp_cart);
+
+        $wishlist = array_values(session()->get('wishlist') ?? array());
+        $tmp_wishlist = array();
+        foreach ($wishlist as $item) {
+            $product = $this->productModel->find($item['id']);
+            array_push($tmp_wishlist, $product);
+        }
+        session()->set('tmp_wishlist', $tmp_wishlist);
     }
+
     public function index()
     {
-        $products = $this->productModel->where('is_active', 1)->findAll(2);
-        $data['categories'] = $this->categoryModel->findAll();
+        $categories = $this->categoryModel->findAll();
+        foreach ($categories as $category) {
+            $category->count = count($this->productModel->where(['category_id' => $category->id, 'is_active' => 1])->findAll());
+        }
+        $data['categories'] = $categories;
+
+        $products = $this->productModel->where('is_active', 1)->findAll();
         foreach ($products as $product) {
             $product->category = $this->categoryModel->find($product->category_id);
             $product->brand = $this->brandModel->find($product->brand_id);
         }
+
         session()->setFlashdata('products', $products);
         $data['products'] = $products;
         $data['title'] = 'Trang chủ';
@@ -44,12 +59,18 @@ class ClientController extends BaseController
 
     public function product()
     {
+        $categories = $this->categoryModel->findAll();
+        foreach ($categories as $category) {
+            $category->count = count($this->productModel->where(['category_id' => $category->id, 'is_active' => 1])->findAll());
+        }
+        $data['categories'] = $categories;
+
         $products = $this->productModel->where('is_active', 1)->findAll();
-        $data['categories'] = $this->categoryModel->findAll();
         foreach ($products as $product) {
             $product->category = $this->categoryModel->find($product->category_id);
             $product->brand = $this->brandModel->find($product->brand_id);
         }
+
         session()->setFlashdata('products', $products);
         $data['products'] = $products;
         $data['title'] = 'Sản phẩm';
@@ -91,10 +112,10 @@ class ClientController extends BaseController
 
     public function add_to_cart($id)
     {
-        $quantity = $this->request->getPost('quantity');
+        $quantity = $this->request->getPost('quantity') ?? 1;
         $item = array('id' => $id, 'quantity' => $quantity);
         if (session()->has('cart')) {
-            $index = $this->exists($id);
+            $index = $this->exists_in_cart($id);
             $cart = array_values(session()->get('cart'));
             if ($index == -1) {
                 array_push($cart, $item);
@@ -126,14 +147,14 @@ class ClientController extends BaseController
 
     public function remove_from_cart($id)
     {
-        $index = $this->exists($id);
+        $index = $this->exists_in_cart($id);
         $cart = array_values(session()->get('cart'));
         unset($cart[$index]);
         session()->set('cart', $cart);
         return redirect()->back();
     }
 
-    private function exists($id)
+    private function exists_in_cart($id)
     {
         $cart = array_values(session()->get('cart'));
         for ($i = 0; $i < count($cart); $i++) {
@@ -183,5 +204,38 @@ class ClientController extends BaseController
 
         session()->remove('cart');
         return view('clients/pages/placed');
+    }
+
+    public function add_to_wishlist($id)
+    {
+        $item = array('id' => $id);
+        array_push($wishlist, $item);
+        if (session()->has('wishlist')) {
+            $wishlist = array_values(session()->get('wishlist'));
+        } else {
+            $wishlist = array($item);
+        }
+        session()->set('wishlist', $wishlist);
+
+        return redirect()->back();
+    }
+
+    public function remove_from_wishlist($id)
+    {
+        $index = $this->exists_in_wishlist($id);
+        $wishlist = array_values(session()->get('wishlist'));
+        unset($wishlist[$index]);
+        session()->set('wishlist', $wishlist);
+        return redirect()->back();
+    }
+    
+    private function exists_in_wishlist($id)
+    {
+        $cart = array_values(session()->get('cart'));
+        for ($i = 0; $i < count($cart); $i++) {
+            if ($cart[$i]['id'] == $id) {
+                return $i;
+            }
+        }
     }
 }
