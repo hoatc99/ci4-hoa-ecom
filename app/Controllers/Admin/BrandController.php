@@ -31,13 +31,22 @@ class BrandController extends BaseController
         $rules = [
             'ten_thuong_hieu' => 'required|min_length[1]|max_length[50]|is_unique[brands.name]',
         ];
-        if ($this->validate($rules)) {
+        $errors = [
+            'ten_thuong_hieu' => [
+                'required' => 'Tên thương hiệu không được để trống',
+                'min_length[1]' => 'Tên thương hiệu phải có ít nhất 1 ký tự',
+                'max_length[50]' => 'Tên thương hiệu không được dài hơn 50 ký tự',
+                'is_unique[brands.name]' => 'Tên thương hiệu này đã tồn tại',
+            ],
+        ];
+        if ($this->validate($rules, $errors)) {
             $this->brandModel->save([
                 'name' => $this->request->getPost('ten_thuong_hieu'),
+                'slug' => url_title($this->request->getPost('ten_thuong_hieu'), '-', true),
             ]);
             return redirect('Admin\BrandController::index');
         } else {
-            return redirect()->back()->with('validation', $this->validator);
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
     }
 
@@ -46,6 +55,7 @@ class BrandController extends BaseController
         $this->brandModel->save([
             'id' => $id,
             'name' => $this->request->getPost('ten_thuong_hieu'),
+            'slug' => url_title($this->request->getPost('ten_thuong_hieu'), '-', true),
         ]);
         return redirect('Admin\BrandController::index');
     }

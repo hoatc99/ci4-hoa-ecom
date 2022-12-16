@@ -39,6 +39,10 @@ class HomeController extends BaseController
 
     public function register()
     {
+        if (session()->has('user'))
+        {
+            return redirect('Admin\HomeController::index');
+        }
         $data['title'] = 'Đăng ký';
         return view('register', $data);
     }

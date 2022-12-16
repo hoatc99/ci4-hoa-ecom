@@ -35,17 +35,21 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->resource('/admin/orders', ['websafe' => 1, 'controller' => 'Admin\OrderController', 'placeholder' => '(:num)']);
-$routes->post('/admin/products/(:num)/disable', 'Admin\ProductController::disable/$1');
-$routes->post('/admin/products/(:num)/enable', 'Admin\ProductController::enable/$1');
-$routes->resource('/admin/products', ['websafe' => 1, 'controller' => 'Admin\ProductController', 'placeholder' => '(:num)']);
-$routes->resource('/admin/categories', ['websafe' => 1, 'controller' => 'Admin\CategoryController', 'placeholder' => '(:num)', 'excepts' => ['new, edit']]);
-$routes->resource('/admin/brands', ['websafe' => 1, 'controller' => 'Admin\BrandController', 'placeholder' => '(:num)', 'excepts' => ['new, edit']]);
-$routes->resource('/admin/users', ['websafe' => 1, 'controller' => 'Admin\UserController', 'placeholder' => '(:num)', 'excepts' => ['new, edit']]);
-$routes->get('/admin/logout', 'Admin\HomeController::logout');
+
 $routes->post('/admin/login', 'Admin\HomeController::auth');
 $routes->get('/admin/login', 'Admin\HomeController::login');
-$routes->get('/admin', 'Admin\HomeController::index');
+
+$routes->group('admin', ['filter' => 'authGuard'], static function ($routes) {
+    $routes->resource('orders', ['websafe' => 1, 'controller' => 'Admin\OrderController', 'placeholder' => '(:num)']);
+    $routes->post('products/(:num)/disable', 'Admin\ProductController::disable/$1');
+    $routes->post('products/(:num)/enable', 'Admin\ProductController::enable/$1');
+    $routes->resource('products', ['websafe' => 1, 'controller' => 'Admin\ProductController', 'placeholder' => '(:num)']);
+    $routes->resource('categories', ['websafe' => 1, 'controller' => 'Admin\CategoryController', 'placeholder' => '(:num)', 'excepts' => ['new, edit']]);
+    $routes->resource('brands', ['websafe' => 1, 'controller' => 'Admin\BrandController', 'placeholder' => '(:num)', 'excepts' => ['new, edit']]);
+    $routes->resource('users', ['websafe' => 1, 'controller' => 'Admin\UserController', 'placeholder' => '(:num)', 'excepts' => ['new, edit']]);
+    $routes->get('logout', 'Admin\HomeController::logout');
+    $routes->get('', 'Admin\HomeController::index');
+});
 
 $routes->get('/contact', 'ClientController::contact');
 $routes->get('/about', 'ClientController::about');

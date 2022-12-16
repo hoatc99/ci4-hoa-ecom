@@ -30,6 +30,7 @@ class CategoryController extends BaseController
     {
         $this->categoryModel->save([
             'name' => $this->request->getPost('ten_danh_muc'),
+            'slug' => url_title($this->request->getPost('ten_danh_muc'), '-', true),
         ]);
         return redirect('Admin\CategoryController::index');
     }
@@ -39,6 +40,7 @@ class CategoryController extends BaseController
         $this->categoryModel->save([
             'id' => $id,
             'name' => $this->request->getPost('ten_danh_muc'),
+            'slug' => url_title($this->request->getPost('ten_danh_muc'), '-', true),
         ]);
         return redirect('Admin\CategoryController::index');
     }
